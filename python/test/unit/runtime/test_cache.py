@@ -26,6 +26,7 @@ from triton._internal_testing import is_hip
 from triton.runtime.cache import FileCacheManager, RemoteCacheManager
 from triton.runtime.jit import get_device_key
 
+
 @pytest.mark.parametrize("backend, options_type, arch", [
     ("amd", "HIPOptions", "gfx950"),
     ("nvidia", "CUDAOptions", "sm90"),
@@ -824,10 +825,12 @@ def _preload_constants(specialization_data, monkeypatch):
     backend = SimpleNamespace(parse_options=lambda options: options)
     kernel = SimpleNamespace(
         _fn_name="reference_kernel",
-        device_caches={0: (None, None, target, backend, None)},
+        device_caches={"cuda:0": (None, None, target, backend, None)},
         _do_compile=lambda key, signature, device, constexprs, options, attrs, warmup: constexprs,
     )
-    monkeypatch.setattr(jit, "driver", SimpleNamespace(active=SimpleNamespace(get_current_device=lambda: 0)))
+    monkeypatch.setattr(
+        jit, "driver",
+        SimpleNamespace(active=SimpleNamespace(get_current_device=lambda: 0, get_current_target=lambda: target)))
     return jit.JITFunction.preload(kernel, specialization_data)
 
 
@@ -1462,7 +1465,7 @@ def test_module_unload_uses_loading_driver(monkeypatch, fresh_knobs):
 
     loading_driver = SimpleNamespace(
         get_current_device=lambda: 0,
-        get_current_target=lambda: SimpleNamespace(warp_size=32),
+        get_current_target=lambda: SimpleNamespace(),
         launcher_cls=lambda src, metadata: object(),
         utils=SimpleNamespace(
             load_binary=lambda *args: (module, function, 0, 0, 1024),
@@ -1473,7 +1476,7 @@ def test_module_unload_uses_loading_driver(monkeypatch, fresh_knobs):
 
     compiled = object.__new__(compiler.CompiledKernel)
     compiled.src = object()
-    compiled.metadata = SimpleNamespace(shared=0, num_warps=1)
+    compiled.metadata = SimpleNamespace(shared=0, num_warps=1, warp_size=32)
     compiled.metadata_group = {}
     compiled.hash = "hash"
     compiled.name = "kernel"
