@@ -212,6 +212,25 @@ def ConvertDotToNanokernel : Pass<"triton-cpu-convert-dot-to-nanokernel", "mlir:
                              "mlir::x86::X86Dialect"];
 }
 
+def ConvertDotToX86 : Pass<"triton-cpu-convert-dot-to-x86", "mlir::ModuleOp"> {
+    let summary = "Convert dot product op to vector contraction and apply upstream patterns.";
+    let description = [{
+        This pass attempts to lower tl.dot operations inside an accumulation
+        loop to optimal vector code for AMX, using upstream MLIR patterns.
+    }];
+
+    let options = [
+        Option<"cpuFeatures", "cpu-features",
+               "std::string", /*default*/"",
+               "Comma-separated list of CPU features available for lowering of dot op.">
+    ];
+
+    let constructor = "mlir::triton::cpu::createConvertDotToX86()";
+
+    let dependentDialects = ["mlir::vector::VectorDialect",
+                             "mlir::x86::X86Dialect"];
+}
+
 def Canonicalize : Pass<"triton-cpu-canonicalize", "mlir::ModuleOp"> {
     let summary = "Canonicalization pass.";
     let description = [{

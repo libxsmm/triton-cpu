@@ -215,8 +215,10 @@ class CPUBackend(BaseBackend):
             cpu.passes.ttcpuir.add_convert_dot_to_ukernels(pm, ukernels)
             passes.common.add_canonicalizer(pm)
             passes.common.add_cse(pm)
-        else:
+        elif getenv_bool("TRITON_CPU_X86_USE_DOWNSTREAM_DOT_LOWERING", False):
             cpu.passes.ttcpuir.add_convert_dot_to_nanokernel(pm, ",".join(self.cpu_features))
+        else:
+            cpu.passes.ttcpuir.add_convert_dot_to_x86(pm, ",".join(self.cpu_features))
         convert_bf16_dot_product = ((self.cpu_arch == "aarch64" or self.cpu_arch == "armv8")
                                     and 'fp-armv8' in self.cpu_features and 'neon' in self.cpu_features)
         if convert_bf16_dot_product:
