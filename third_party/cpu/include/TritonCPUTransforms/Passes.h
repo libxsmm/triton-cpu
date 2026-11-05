@@ -47,6 +47,8 @@ std::unique_ptr<OperationPass<ModuleOp>>
 createConvertVectorContractToArmNeonBFMMLA();
 std::unique_ptr<OperationPass<ModuleOp>>
 createConvertDotToNanokernel(std::string cpuFeatures = "");
+std::unique_ptr<OperationPass<ModuleOp>>
+createConvertDotToX86(std::string cpuFeatures = "");
 
 std::unique_ptr<OperationPass<ModuleOp>> createCanonicalize();
 
