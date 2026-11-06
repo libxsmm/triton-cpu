@@ -74,7 +74,7 @@ tt.func public @gemm_amx_bf16(%arg0: !tt.ptr<bf16>, %arg1: !tt.ptr<bf16>, %arg2:
 // AMX:         %[[B_VNNI:.+]] = memref.expand_shape %{{.+}} {{\[\[0\], \[1\], \[2\], \[3, 4\]\]}} output_shape [%{{.+}}, %{{.+}}, 16, 32, 2] : memref<?x?x16x64xbf16, strided<[?, 1024, 64, 1]>> into memref<?x?x16x32x2xbf16, strided<[?, 1024, 64, 2, 1]>>
 
 // Tile registers for accumulation
-// AMX-COUNT-4: x86.amx.tile_zero : !x86.amx.tile<16x16xf32>
+// AMX-COUNT-4: x86.amx.tile_load {{.*}} : memref<32x32xf32> into !x86.amx.tile<16x16xf32>
 
 // AMX-NOT:     vector.shuffle
 
@@ -335,7 +335,7 @@ tt.func public @gemm_amx_fp8e5m2(%arg0: !tt.ptr<f8E5M2>, %arg1: !tt.ptr<f8E5M2>,
 // AMX:         %[[B_VNNI:.+]] = memref.expand_shape %{{.+}} {{\[\[0\], \[1\], \[2\], \[3, 4\]\]}} output_shape [%{{.+}}, %{{.+}}, 16, 32, 4] : memref<?x?x16x128xi8, strided<[?, 2048, 128, 1]>> into memref<?x?x16x32x4xi8, strided<[?, 2048, 128, 4, 1]>>
 
 // Tile registers for accumulation
-// AMX-COUNT-4: x86.amx.tile_zero : !x86.amx.tile<16x16xi32>
+// AMX-COUNT-4: x86.amx.tile_load {{.*}} : memref<32x32xi32> into !x86.amx.tile<16x16xi32>
 
 // AMX-NOT:     vector.shuffle
 
