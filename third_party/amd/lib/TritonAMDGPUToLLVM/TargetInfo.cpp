@@ -199,7 +199,7 @@ Value TargetInfo::loadRelaxed(RewriterBase &rewriter, Location loc, Value ptr,
         Value loaded = LLVM::LoadOp::create(
             rewriter, loc, valueTy, ptr, alignment, /*isVolatile=*/false,
             /*isNonTemporal=*/false, /*isInvariant=*/false,
-            /*isInvariantGroup=*/false, LLVM::AtomicOrdering::monotonic,
+            /*isInvariantGroup=*/false, false, LLVM::AtomicOrdering::monotonic,
             getAtomicSyncScope(scope));
         return SmallVector<Value>{loaded};
       });

@@ -968,8 +968,8 @@ void init_triton_ir(py::module_ &m) {
                                          self.getBuilder().getBoolAttr(true));
              mlir::LLVM::LoopAnnotationAttr la =
                  mlir::LLVM::LoopAnnotationAttr::get(
-                     self.getBuilder().getContext(), {}, {}, {}, {}, {},
-                     licmAttr, {}, {}, {}, {}, {}, {}, {}, {}, {});
+                     self.getBuilder().getContext(), {}, {}, {}, {}, {}, {},
+                     licmAttr, {}, {}, {}, {}, {}, {}, 0, {}, {}, {});
              return la;
            })
       // Use arith.ConstantOp to create constants
